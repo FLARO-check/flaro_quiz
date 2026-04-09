@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FLARO 理解度チェック｜Day 1</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo",sans-serif;background:#f5f4f0;color:#1a1a1a;min-height:100vh;padding:24px 16px}
+.container{max-width:560px;margin:0 auto}
+.back{font-size:13px;color:#999;background:none;border:none;cursor:pointer;padding:0;margin-bottom:16px;display:block}
+.back:hover{color:#1a1a1a}
+.badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.08em;background:#1a1a1a;color:#f5f4f0;padding:3px 9px;border-radius:3px;margin-bottom:8px}
+.title{font-size:20px;font-weight:700;line-height:1.3;margin-bottom:3px}
+.subtitle{font-size:12px;color:#888;margin-bottom:24px}
+.form-card{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px}
+.form-title{font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:14px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;font-weight:500;color:#555;margin-bottom:4px}
+.req{color:#c0392b;margin-left:2px}
+.field input{width:100%;padding:9px 12px;border:1.5px solid #e8e8e4;border-radius:8px;font-size:14px;color:#1a1a1a;background:#fafafa;outline:none;transition:border 0.15s}
+.field input:focus{border-color:#1a1a1a;background:#fff}
+.field input.error{border-color:#c0392b}
+.err-msg{font-size:11px;color:#c0392b;margin-top:3px;display:none}
+.start-btn{width:100%;padding:12px;border-radius:8px;border:none;background:#1a1a1a;color:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:background 0.15s}
+.start-btn:hover{background:#333}
+.progress-wrap{margin-bottom:16px}
+.progress-meta{display:flex;justify-content:space-between;font-size:12px;color:#999;margin-bottom:5px}
+.progress-bg{height:3px;background:#ddd;border-radius:2px}
+.progress-fill{height:3px;background:#1a1a1a;border-radius:2px;transition:width 0.35s}
+.dot-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px}
+.dot{width:9px;height:9px;border-radius:50%;background:#e0e0e0;cursor:pointer}
+.dot.done{background:#aaa}.dot.cur{background:#1a1a1a}
+.q-card{background:#fff;border-radius:12px;padding:20px;margin-bottom:12px}
+.q-fn{font-size:10px;font-weight:700;letter-spacing:0.05em;color:#ccc;margin-bottom:5px}
+.q-text{font-size:14px;font-weight:500;line-height:1.65;margin-bottom:14px}
+.choices{display:flex;flex-direction:column;gap:7px}
+.choice{padding:11px 13px;border-radius:8px;border:1.5px solid #e8e8e4;background:#fafafa;font-size:13px;color:#333;cursor:pointer;text-align:left;transition:all 0.12s;line-height:1.5;width:100%}
+.choice:hover{border-color:#999;background:#f0efeb}
+.choice.selected{border-color:#1a1a1a;background:#1a1a1a;color:#fff}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.btn{font-size:13px;font-weight:500;padding:9px 16px;border-radius:8px;border:1.5px solid #1a1a1a;background:transparent;color:#1a1a1a;cursor:pointer;transition:all 0.15s}
+.btn:hover{background:#1a1a1a;color:#fff}
+.btn:disabled{opacity:0.22;cursor:default}
+.btn-primary{background:#1a1a1a;color:#fff}
+.btn-primary:disabled{opacity:0.22;cursor:default}
+.result-card{background:#fff;border-radius:12px;padding:28px 20px;text-align:center}
+.result-score{font-size:48px;font-weight:700;line-height:1;margin-bottom:4px}
+.great{color:#2d7a4f}.ok{color:#b07d1a}.low{color:#c0392b}
+.result-label{font-size:13px;color:#888;margin-bottom:20px;line-height:1.6}
+.review-list{text-align:left;margin-bottom:20px}
+.review-item{padding:12px 14px;border-radius:8px;margin-bottom:7px;font-size:13px;line-height:1.55}
+.review-item.c{background:#edf7f1;border:1px solid #b7dfc9;color:#1a4a30}
+.review-item.w{background:#fdf0ef;border:1px solid #f0b9b5;color:#7a1a12}
+.ans{font-size:12px;margin-top:3px;opacity:0.75}
+.explain{font-size:11px;margin-top:5px;padding-top:5px;border-top:0.5px solid currentColor;opacity:0.65;line-height:1.5}
+.result-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.sending{font-size:12px;color:#888;margin-bottom:12px}</style>
+</head>
+<body>
+<div class="container">
+  <button class="back" onclick="location.href='index.html'">← Dayを選びなおす</button>
+  <div class="badge">Day 1</div>
+  <div class="title">理解度チェッククイズ</div>
+  <div class="subtitle">打刻設定・シフト管理（本部向け）</div>
+  <div id="app"></div>
+</div>
+<script>
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyRIJg_fCHZqUeKK8mEgjjlHZvCfTnyikGA69zyFny3mBGLjhSTDqJVKInyrzcAC_cY/exec";
+const DAY = "Day 1";
+const qs = [{"fn": "新規ユーザー登録", "q": "FLAROを利用するための「新規ユーザー登録」において、ログインIDとして使用される情報はどれですか？", "choices": ["任意の英数字によるID", "携帯電話番号", "名前", "メールアドレス"], "ans": 3, "explain": "FLAROを利用するにあたり、ログインIDとして使用されるのは「スタッフマスタ」に登録された「メールアドレス」となります。"}, {"fn": "ユーザー登録状況確認", "q": "「ユーザー登録状況確認」画面で確認できるステータスとして、正しくないものはどれですか？", "choices": ["顔写真の登録有無（顔写真あり / なし）", "メールアドレスの登録有無", "打刻IDの登録有無", "新規ユーザー登録の状況（完了 / 未登録）"], "ans": 2, "explain": "この画面では「メールアドレス登録の有無」「新規ユーザー登録状況」「顔写真の登録状況」の3つが確認できます。打刻IDの登録有無は別画面で確認します。"}, {"fn": "店舗マスタ", "q": "「店舗マスタ」で設定する「マネージャー」と「シニアマネージャー」の承認権限の違いについて、正しい説明はどれですか？", "choices": ["マネージャーは所属店舗のスタッフのみ、シニアマネージャーは全店舗のスタッフの申請を承認できる", "マネージャーが承認した勤怠記録をシニアマネージャーが更に承認（二重承認）することができる", "マネージャーは他のマネージャーおよびシニアマネージャー以外のスタッフの申請を承認でき、シニアマネージャーは全てのスタッフの申請を承認できる", "マネージャーは一般スタッフのみ、シニアマネージャーはアルバイトのみの申請を承認できる"], "ans": 2, "explain": "マネージャーは「他のマネージャーおよびシニアマネージャー以外のスタッフ」が承認対象、シニアマネージャーは「全てのスタッフ」が承認対象となります。"}, {"fn": "勤怠承認", "q": "「勤怠承認」画面でマネージャーが各種申請の承認・否決を行う際、スマートフォンからの操作について正しい説明はどれですか？", "choices": ["PCからのみ操作可能で、スマートフォンからは承認・否決を行えない", "スマートフォンからも承認・否決の操作を行うことが可能である", "承認はスマートフォンから行えるが、否決はPCからのみ行える", "専用のスマートフォンアプリをインストールしなければ操作できない"], "ans": 1, "explain": "勤怠承認画面での各種申請は、PCだけでなくスマートフォンからでも承認・否決の操作を行うことが可能です。"}, {"fn": "マイシフト", "q": "「マイシフト」画面からスタッフが希望シフトを提出する際、指定できない内容はどれですか？", "choices": ["シフトパターンマスタで作成されたシフトパターン", "出勤できる時間と勤務場所", "出勤できない旨（休みの希望）", "一緒に働くスタッフの希望"], "ans": 3, "explain": "マイシフトでは「シフトパターン」「出勤できます」「出勤できません」のいずれかで希望を提出します。他スタッフの指定はできません。"}, {"fn": "店舗シフト", "q": "「店舗シフト」画面でシフト表を確認する際、フィルターを使用して絞り込みができる項目はどれですか？", "choices": ["業務内容 と 時間帯", "シフト登録 と 労働形態", "役職 と 雇用形態", "性別 と 年齢"], "ans": 1, "explain": "店舗シフト画面のフィルター機能では「シフト登録」および「労働形態」の項目で絞り込みができます。"}, {"fn": "打刻修正申請", "q": "「打刻修正申請」について、正しい説明はどれですか？", "choices": ["勤怠データが何もない日でも「打刻修正申請」から出退勤時刻を追加できる", "月に申請できる回数は最大3回まで", "シニアマネージャー自身が自分の勤怠を申請した場合、承認なしで即時反映される", "申請中の勤怠がある状態でも、勤怠の確定ができる"], "ans": 2, "explain": "シニアマネージャー（またはマネージャー）が自身の申請を行った場合は即時反映されます。データが何もない日は「打刻追加申請」を使用し、申請中の勤怠が残っている状態では勤怠確定ができません。"}, {"fn": "勤怠修正", "q": "勤怠修正時の流れについて、正しいものを選んでください。", "choices": ["エラーのある勤怠を修正し、申請を経て承認されることで緑枠表示になる", "エラーのある勤怠を修正し、申請を経て承認されることで青枠表示になる", "エラーのない勤怠を修正し、申請を経て承認されることで緑枠表示になる", "エラーのない勤怠を修正し、申請を経て承認されることで黄枠表示になる"], "ans": 1, "explain": "エラー発生時は「赤枠」、修正申請を出すと「緑枠（申請中）」、承認されて修正完了すると「青枠（修正済み）」の表示に変わります。"}];
+const alpha = ['A','B','C','D'];
+let phase = 'form';
+let userInfo = {};
+let cur = 0, answers = new Array(qs.length).fill(null), done = false;
+
+function render() {
+  if (phase === 'form') renderForm();
+  else if (phase === 'quiz') renderQuiz();
+  else renderResult();
+}
+
+function renderForm() {
+  document.getElementById('app').innerHTML = `
+    <div class="form-card">
+      <div class="form-title">はじめに情報を入力してください</div>
+      <div class="field">
+        <label>会社名<span class="req">*</span></label>
+        <input type="text" id="f-company" placeholder="例：株式会社○○フード">
+        <div class="err-msg" id="e-company">会社名を入力してください</div>
+      </div>
+      <div class="field">
+        <label>氏名<span class="req">*</span></label>
+        <input type="text" id="f-name" placeholder="例：田中 太郎">
+        <div class="err-msg" id="e-name">氏名を入力してください</div>
+      </div>
+      <div class="field">
+        <label>店舗名<span style="font-size:11px;color:#bbb;margin-left:4px">任意</span></label>
+        <input type="text" id="f-store" placeholder="例：渋谷店">
+      </div>
+      <button class="start-btn" onclick="startQuiz()">クイズをスタートする</button>
+    </div>
+  `;
+}
+
+function startQuiz() {
+  const company = document.getElementById('f-company').value.trim();
+  const name = document.getElementById('f-name').value.trim();
+  const store = document.getElementById('f-store').value.trim();
+  let valid = true;
+  if (!company) {
+    document.getElementById('f-company').classList.add('error');
+    document.getElementById('e-company').style.display = 'block';
+    valid = false;
+  } else {
+    document.getElementById('f-company').classList.remove('error');
+    document.getElementById('e-company').style.display = 'none';
+  }
+  if (!name) {
+    document.getElementById('f-name').classList.add('error');
+    document.getElementById('e-name').style.display = 'block';
+    valid = false;
+  } else {
+    document.getElementById('f-name').classList.remove('error');
+    document.getElementById('e-name').style.display = 'none';
+  }
+  if (!valid) return;
+  userInfo = { company, name, store };
+  phase = 'quiz';
+  render();
+}
+
+function renderQuiz() {
+  const q = qs[cur];
+  const pct = Math.round(((cur+1)/qs.length)*100);
+  document.getElementById('app').innerHTML = `
+    <div class="progress-wrap">
+      <div class="progress-meta"><span>${q.fn}</span><span>${cur+1} / ${qs.length}</span></div>
+      <div class="progress-bg"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="dot-row">${qs.map((_,i)=>'<div class="dot'+(answers[i]!==null?' done':'')+(i===cur?' cur':'')+'" onclick="go('+i+')"></div>').join('')}</div>
+    <div class="q-card">
+      <div class="q-fn">${q.fn}</div>
+      <div class="q-text">Q${cur+1}. ${q.q}</div>
+      <div class="choices">${q.choices.map((c,i)=>'<button class="choice'+(answers[cur]===i?' selected':'')+'" onclick="sel('+i+')">'+alpha[i]+'. '+c+'</button>').join('')}</div>
+    </div>
+    <div class="nav">
+      <button class="btn" onclick="prev()" ${cur===0?'disabled':''}>← 前へ</button>
+      <button class="btn" onclick="next()" ${cur===qs.length-1?'disabled':''}>次へ →</button>
+      <button class="btn btn-primary" onclick="submit()" ${answers.includes(null)?'disabled':''}>採点する</button>
+    </div>
+  `;
+}
+
+function go(i){cur=i;render();}
+function sel(i){answers[cur]=i;render();}
+function prev(){if(cur>0){cur--;render();}}
+function next(){if(cur<qs.length-1){cur++;render();}}
+function submit(){if(answers.includes(null))return;done=true;sendData();phase='result';render();}
+
+function sendData() {
+  const correct = qs.filter((_,i)=>answers[i]===qs[i].ans).length;
+  const answerLabels = answers.map((a,i)=>{
+    if(a===null) return '未回答';
+    return alpha[a]+(a===qs[i].ans?' ○':' ✕');
+  });
+  const payload = {
+    company: userInfo.company,
+    name: userInfo.name,
+    store: userInfo.store,
+    day: DAY,
+    score: correct,
+    total: qs.length,
+    answers: answerLabels
+  };
+  fetch(GAS_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  }).catch(()=>{});
+}
+
+function renderResult() {
+  const correct = qs.filter((_,i)=>answers[i]===qs[i].ans).length;
+  const pct = Math.round((correct/qs.length)*100);
+  const cls = pct>=80?'great':pct>=60?'ok':'low';
+  const msg = pct>=80?'理解度バッチリです！':'苦手な箇所を復習してみましょう。';
+  document.getElementById('app').innerHTML = `
+    <div class="result-card">
+      <div style="font-size:11px;color:#ccc;font-weight:700;letter-spacing:0.06em;margin-bottom:4px">DAY ${userInfo.name} さんの結果</div>
+      <div class="result-score ${cls}">${correct}<span style="font-size:20px;font-weight:400"> / ${qs.length}</span></div>
+      <div class="result-label">${pct}点 · ${msg}</div>
+      <div class="sending">※ 回答データを送信しました</div>
+      <div class="review-list">${qs.map((q,i)=>{const ok=answers[i]===q.ans;return'<div class="review-item '+(ok?'c':'w')+'"><div>'+(ok?'○':'✕')+' Q'+(i+1)+'. '+q.q+'</div>'+(ok?'':'<div class="ans">正解：'+alpha[q.ans]+'. '+q.choices[q.ans]+'</div>')+'<div class="explain">'+q.explain+'</div></div>';}).join('')}</div>
+      <div class="result-actions">
+        <button class="btn" onclick="retry()">もう一度挑戦する</button>
+        
+      </div>
+    </div>
+  `;
+}
+
+function retry(){answers=new Array(qs.length).fill(null);cur=0;done=false;phase='form';userInfo={};render();}
+render();
+</script>
+</body>
+</html>
