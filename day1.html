@@ -155,7 +155,13 @@ function renderQuiz() {
 }
 
 function go(i){cur=i;render();}
-function sel(i){answers[cur]=i;render();if(cur<qs.length-1){setTimeout(()=>{cur++;render();},300);}}
+function sel(i){
+  answers[cur]=i;
+  render();
+  setTimeout(()=>{
+    if(cur<qs.length-1){cur++;render();}
+  },300);
+}
 function prev(){if(cur>0){cur--;render();}}
 function next(){if(cur<qs.length-1){cur++;render();}}
 function submitQuiz(){if(answers.includes(null))return;done=true;phase='survey';render();}
