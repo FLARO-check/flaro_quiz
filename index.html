@@ -6,113 +6,103 @@
 <title>FLARO 理解度チェック</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+:root{
+  --bg:#eef2f6; --card:#ffffff; --ink:#1c2530; --sub:#66707c;
+  --line:#e0e6ec; --brand:#036EB8; --brand-ink:#025a97;
+  --sel:#e6f1fa; --sel-line:#5ba3d6;
+  --shadow:0 1px 2px rgba(15,35,55,.05),0 8px 28px rgba(15,35,55,.07);
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Noto Sans JP',sans-serif;background:#f5f4f0;color:#1a1a1a;min-height:100vh}
-.hero{background:#1a1a1a;padding:48px 24px 40px;text-align:center}
-.hero-logo{font-size:11px;font-weight:700;letter-spacing:0.15em;color:#888;margin-bottom:20px}
-.hero-title{font-size:28px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:10px}
-.hero-sub{font-size:14px;color:#999;line-height:1.7}
-.container{max-width:560px;margin:0 auto;padding:32px 16px}
-.section-label{font-size:11px;font-weight:700;letter-spacing:0.08em;color:#888;margin-bottom:12px}
-.desc-card{background:#fff;border-radius:12px;padding:20px;margin-bottom:28px;border:0.5px solid #e8e8e4}
-.desc-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:0.5px solid #f0efeb}
-.desc-row:last-child{border-bottom:none;padding-bottom:0}
-.desc-icon{width:32px;height:32px;border-radius:8px;background:#f5f4f0;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
-.desc-body{}
-.desc-title{font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:2px}
-.desc-text{font-size:12px;color:#888;line-height:1.55}
-.day-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:28px}
-.day-card{background:#fff;border-radius:12px;padding:16px 18px;cursor:pointer;border:1.5px solid #e8e8e4;transition:all 0.15s;display:flex;align-items:center;justify-content:space-between;text-decoration:none}
-.day-card:hover{border-color:#1a1a1a;background:#fafaf8}
-.day-left{}
-.day-badge{font-size:10px;font-weight:700;letter-spacing:0.07em;color:#aaa;margin-bottom:3px}
-.day-name{font-size:14px;font-weight:500;color:#1a1a1a;margin-bottom:2px}
-.day-meta{font-size:12px;color:#bbb}
-.day-arrow{font-size:18px;color:#ccc}
-.footer{text-align:center;padding:0 0 32px;font-size:12px;color:#bbb}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:680px;margin:0 auto;padding:28px 18px 64px}
+.brandbar{display:flex;align-items:center;gap:10px;margin-bottom:22px}
+.brandbar .mark{width:26px;height:26px;border-radius:7px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;letter-spacing:.5px}
+.brandbar .name{font-weight:700;letter-spacing:.06em;font-size:14px}
+.hero{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:28px 24px;margin-bottom:20px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--brand)}
+h1{font-size:24px;font-weight:700;margin:8px 0 10px;letter-spacing:.01em}
+.hero p{font-size:14px;color:var(--sub)}
+.about{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.chip{font-size:12px;color:var(--brand-ink);background:var(--sel);border:1px solid #cfe4f5;border-radius:20px;padding:5px 12px;font-weight:500}
+.sectlabel{font-size:13px;font-weight:700;color:var(--sub);letter-spacing:.06em;margin:8px 4px 12px}
+.days{display:flex;flex-direction:column;gap:12px}
+.daycard{display:flex;align-items:center;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;text-decoration:none;color:inherit;transition:border-color .15s,transform .06s,box-shadow .15s}
+.daycard:hover{border-color:var(--sel-line);box-shadow:0 2px 4px rgba(15,35,55,.06),0 12px 30px rgba(3,110,184,.12)}
+.daycard:active{transform:translateY(1px)}
+.daynum{flex:none;width:64px;font-weight:700;color:#fff;background:var(--brand);border-radius:10px;text-align:center;padding:12px 0;font-size:13px;letter-spacing:.03em}
+.daybody{flex:1}
+.daytitle{font-size:15px;font-weight:500}
+.daymeta{font-size:12px;color:var(--sub);margin-top:2px}
+.arrow{flex:none;color:var(--brand);font-weight:700;font-size:18px}
+.footer{text-align:center;font-size:11px;color:#9aa0ab;margin-top:26px;letter-spacing:.04em}
+@media (max-width:480px){h1{font-size:21px}.daynum{width:56px;font-size:12px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-
-<div class="hero">
-  <div class="hero-logo">FLARO</div>
-  <div class="hero-title">理解度チェッククイズ</div>
-  <div class="hero-sub">研修で学んだ内容をクイズ形式で確認しましょう。<br>受講したDayを選んでスタートしてください。</div>
-</div>
-
-<div class="container">
-
-  <div class="section-label">このクイズについて</div>
-  <div class="desc-card">
-    <div class="desc-row">
-      <div class="desc-icon">📋</div>
-      <div class="desc-body">
-        <div class="desc-title">各Day 8問・4択形式</div>
-        <div class="desc-text">研修で扱った機能・操作手順をもとに出題されます</div>
-      </div>
-    </div>
-    <div class="desc-row">
-      <div class="desc-icon">✅</div>
-      <div class="desc-body">
-        <div class="desc-title">全問回答後に一括採点</div>
-        <div class="desc-text">正解・不正解を一覧で確認できます</div>
-      </div>
-    </div>
-    <div class="desc-row">
-      <div class="desc-icon">🔄</div>
-      <div class="desc-body">
-        <div class="desc-title">何度でも挑戦できます</div>
-        <div class="desc-text">満点になるまで繰り返し取り組んでみてください</div>
-      </div>
+<div class="wrap">
+  <div class="brandbar"><div class="mark">F</div><div class="name">FLARO 理解度チェック</div></div>
+  <div class="hero">
+    <div class="eyebrow">FLARO ONBOARDING</div>
+    <h1>理解度チェック</h1>
+    <p>各Dayの導入内容がしっかり定着しているかを確認するチェックです。実際の画面を思い出しながら、4択で回答してください。</p>
+    <div class="about">
+      <span class="chip">選択式・4択</span>
+      <span class="chip">結果に解説つき</span>
     </div>
   </div>
-
-  <div class="section-label">受講したDayを選択</div>
-  <div class="day-grid">
-    <a class="day-card" href="day1.html">
-      <div class="day-left">
-        <div class="day-badge">DAY 1</div>
-        <div class="day-name">打刻設定・シフト管理</div>
-        <div class="day-meta">本部スタッフ向け・8問</div>
-      </div>
-      <div class="day-arrow">›</div>
-    </a>
-    <a class="day-card" href="day2.html">
-      <div class="day-left">
-        <div class="day-badge">DAY 2</div>
-        <div class="day-name">打刻・シフト（店舗実践）</div>
-        <div class="day-meta">店舗スタッフ向け・8問</div>
-      </div>
-      <div class="day-arrow">›</div>
-    </a>
-    <a class="day-card" href="day3.html">
-      <div class="day-left">
-        <div class="day-badge">DAY 3</div>
-        <div class="day-name">労務規約・雇用形態マスタ</div>
-        <div class="day-meta">労務管理者向け・8問</div>
-      </div>
-      <div class="day-arrow">›</div>
-    </a>
-    <a class="day-card" href="day4.html">
-      <div class="day-left">
-        <div class="day-badge">DAY 4</div>
-        <div class="day-name">予算・日報</div>
-        <div class="day-meta">本部確認者向け・8問</div>
-      </div>
-      <div class="day-arrow">›</div>
-    </a>
-    <a class="day-card" href="day5.html">
-      <div class="day-left">
-        <div class="day-badge">DAY 5</div>
-        <div class="day-name">予算・日報（店舗実践）</div>
-        <div class="day-meta">店舗スタッフ向け・8問</div>
-      </div>
-      <div class="day-arrow">›</div>
-    </a>
+  <div class="sectlabel">受講するDayを選んでください</div>
+  <div class="days">
+      <a class="daycard" href="day1.html">
+        <div class="daynum">Day 1</div>
+        <div class="daybody">
+          <div class="daytitle">打刻設定・シフト（本部向け）</div>
+          <div class="daymeta">全7問・4択</div>
+        </div>
+        <div class="arrow">→</div>
+      </a>
+      <a class="daycard" href="day2.html">
+        <div class="daynum">Day 2</div>
+        <div class="daybody">
+          <div class="daytitle">打刻設定・シフト（店舗向け運用）</div>
+          <div class="daymeta">全7問・4択</div>
+        </div>
+        <div class="arrow">→</div>
+      </a>
+      <a class="daycard" href="day3.html">
+        <div class="daynum">Day 3</div>
+        <div class="daybody">
+          <div class="daytitle">労務規約項目マスタ・雇用形態マスタ（労務管理者向け）</div>
+          <div class="daymeta">全3問・4択</div>
+        </div>
+        <div class="arrow">→</div>
+      </a>
+      <a class="daycard" href="day4.html">
+        <div class="daynum">Day 4</div>
+        <div class="daybody">
+          <div class="daytitle">予算・日報・レポート（本部向け設定）</div>
+          <div class="daymeta">全6問・4択</div>
+        </div>
+        <div class="arrow">→</div>
+      </a>
+      <a class="daycard" href="day5.html">
+        <div class="daynum">Day 5</div>
+        <div class="daybody">
+          <div class="daytitle">予算・日報・レポート（店舗向け運用）</div>
+          <div class="daymeta">全6問・4択</div>
+        </div>
+        <div class="arrow">→</div>
+      </a>
+      <a class="daycard" href="day6.html">
+        <div class="daynum">Day 6</div>
+        <div class="daybody">
+          <div class="daytitle">管理者向け最終確認</div>
+          <div class="daymeta">全6問・4択</div>
+        </div>
+        <div class="arrow">→</div>
+      </a>
   </div>
-
   <div class="footer">Powered by FLARO カスタマーサクセスチーム</div>
 </div>
-
 </body>
 </html>
