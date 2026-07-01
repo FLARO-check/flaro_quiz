@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FLARO 理解度チェック｜Day 6</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+:root{
+  --bg:#eef2f6; --card:#ffffff; --ink:#1c2530; --sub:#66707c;
+  --line:#e0e6ec; --brand:#036EB8; --brand-ink:#025a97;
+  --sel:#e6f1fa; --sel-line:#5ba3d6;
+  --ok:#2f7d5b; --ok-bg:#eef6f1; --ng:#c0503f; --ng-bg:#fbeeeb;
+  --shadow:0 1px 2px rgba(15,35,55,.05),0 8px 28px rgba(15,35,55,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:680px;margin:0 auto;padding:28px 18px 64px}
+.brandbar{display:flex;align-items:center;gap:10px;margin-bottom:22px}
+.brandbar .mark{width:26px;height:26px;border-radius:7px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;letter-spacing:.5px}
+.brandbar .name{font-weight:700;letter-spacing:.06em;font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:26px 24px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--brand);text-transform:none}
+h1{font-size:23px;font-weight:700;margin:8px 0 4px;letter-spacing:.01em}
+.subttl{color:var(--sub);font-size:14px;margin-bottom:20px}
+.lead{font-size:14px;color:var(--sub);margin:14px 0 22px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;font-weight:500;margin-bottom:6px}
+.field label .req{color:var(--ng);margin-left:4px;font-size:12px}
+.field label .opt{color:var(--sub);margin-left:6px;font-size:11px;font-weight:400}
+.field input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-family:inherit;font-size:15px;background:#fbfaf7;transition:border-color .15s,box-shadow .15s}
+.field input:focus{outline:none;border-color:var(--sel-line);box-shadow:0 0 0 3px rgba(139,183,170,.25);background:#fff}
+.meta{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--sub);margin-bottom:6px}
+.meta span{display:inline-flex;align-items:center;gap:5px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--brand)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 18px;border:none;border-radius:11px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:transform .05s,background .15s,opacity .15s}
+.btn-primary{background:var(--brand);color:#fff}
+.btn-primary:hover{background:var(--brand-ink)}
+.btn-primary:active{transform:translateY(1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--ink);border:1px solid var(--line);width:auto;padding:12px 20px}
+.btn-ghost:hover{background:#f7f5f0}
+.err{color:var(--ng);font-size:13px;margin-top:6px;min-height:18px}
+/* progress */
+.progress{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.dots{display:flex;gap:7px;flex-wrap:wrap;flex:1}
+.pdot{width:26px;height:6px;border-radius:3px;background:var(--line);transition:background .2s}
+.pdot.done{background:var(--sel-line)}
+.pdot.cur{background:var(--brand)}
+.counter{font-size:12px;color:var(--sub);white-space:nowrap;font-variant-numeric:tabular-nums}
+.qnum{font-size:12px;font-weight:700;color:var(--brand);letter-spacing:.1em;margin-bottom:8px}
+.qtext{font-size:17px;font-weight:500;margin-bottom:18px}
+.choices{display:flex;flex-direction:column;gap:10px}
+.choice{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid var(--line);border-radius:12px;cursor:pointer;background:#fff;transition:border-color .12s,background .12s}
+.choice:hover{border-color:var(--sel-line);background:#fafcfb}
+.choice.sel{border-color:var(--sel-line);background:var(--sel)}
+.choice .key{flex:none;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--sub);transition:all .12s}
+.choice.sel .key{background:var(--brand);border-color:var(--brand);color:#fff}
+.choice.sel{animation:pop .28s ease}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.012)}100%{transform:scale(1)}}
+.hint{font-size:12px;color:var(--sub);text-align:center;margin-top:16px}
+.choice .ctext{font-size:15px;padding-top:1px}
+.nav{display:flex;gap:12px;margin-top:24px}
+.nav .btn-ghost{flex:1}
+.nav .btn-primary{flex:2}
+/* result */
+.score-wrap{text-align:center;padding:8px 0 20px}
+.score-num{font-size:52px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.score-num small{font-size:22px;font-weight:400;color:var(--sub)}
+.score-msg{font-size:15px;color:var(--sub);margin-top:10px}
+.score-bar{height:8px;border-radius:4px;background:var(--line);margin:18px auto 0;max-width:280px;overflow:hidden}
+.score-bar i{display:block;height:100%;background:var(--brand);border-radius:4px}
+.rev-title{font-size:13px;font-weight:700;color:var(--sub);letter-spacing:.06em;margin:26px 0 12px}
+.rev{border:1px solid var(--line);border-radius:12px;padding:15px 16px;margin-bottom:12px}
+.rev.ok{border-color:#cfe6da;background:var(--ok-bg)}
+.rev.ng{border-color:#eccec7;background:var(--ng-bg)}
+.rev .rq{font-size:14px;font-weight:500;display:flex;gap:8px;align-items:flex-start}
+.rev .badge{flex:none;font-size:12px;font-weight:700;padding:1px 8px;border-radius:20px}
+.rev.ok .badge{background:var(--ok);color:#fff}
+.rev.ng .badge{background:var(--ng);color:#fff}
+.rev .ans{font-size:13px;margin-top:9px;padding-top:9px;border-top:1px dashed rgba(0,0,0,.12)}
+.rev .ans b{color:var(--ok)}
+.rev .exp{font-size:13px;color:#454b56;margin-top:7px}
+.rev .place{font-size:12px;color:var(--sub);margin-top:6px}
+.rev .place b{color:var(--brand-ink);font-weight:700}
+.savebar{font-size:12px;color:var(--sub);text-align:center;margin-top:8px;min-height:18px}
+.footer{text-align:center;font-size:11px;color:#9aa0ab;margin-top:26px;letter-spacing:.04em}
+@media (max-width:480px){h1{font-size:20px}.qtext{font-size:16px}.score-num{font-size:44px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brandbar"><div class="mark">F</div><div class="name">FLARO 理解度チェック</div></div>
+  <div class="card" id="app"></div>
+  <div class="footer">Powered by FLARO カスタマーサクセスチーム</div>
+</div>
+<script>
+const DAY=6;
+const SUB="管理者向け最終確認";
+const GAS="https://script.google.com/macros/s/AKfycbyRIJg_fCHZqUeKK8mEgjjlHZvCfTnyikGA69zyFny3mBGLjhSTDqJVKInyrzcAC_cY/exec";
+const qs=[{"q": "所属スタッフの時給情報を更新する際、設定が必要なマスタはどれですか？", "choices": ["雇用形態マスタ", "店舗マスタ", "スタッフマスタ", "科目マスタ"], "ans": 2, "place": "設定 ＞ スタッフマスタ ＞ 人件費設定", "exp": "給与適用日・給与体系・給与額、手当や交通費内容を登録できます。手当項目は「手当マスタ」で設定。複数人はCSVインポートで一括変更も可能です。"}, {"q": "売上と各経費の予算と実績を確認できる機能はどれですか？", "choices": ["日報", "商品別帳票", "時間別帳票", "月次帳票"], "ans": 3, "place": "帳票 ＞ 月次帳票 ＞ 予実管理表", "exp": "指定した期間に応じて予実情報を確認できます。日別で見たい場合は「月次日別帳票」で確認します。"}, {"q": "商品の出数順実績を確認できる機能はどれですか？", "choices": ["日報", "商品別帳票", "時間別帳票", "月次帳票"], "ans": 1, "place": "帳票 ＞ 商品別帳票 ＞ ABC数量順", "exp": "POS連携時は商品の出数順を確認できます。売上順、部門別売上、出数順の確認も可能です。"}, {"q": "インフォマートの仕入情報がFLAROに反映されていない時に考えられる原因はどれですか？", "choices": ["タスク処理で完了動作を行っていない", "契約書の電子締結をしていない", "インフォマート画面で受領処理をしていない", "日報の画面を更新していない"], "ans": 2, "place": "", "exp": "仕入情報の反映は、インフォマートでの受領処理後、納品日のデータに反映されます。基本的には受領操作日の翌日には反映されます。"}, {"q": "「勤怠確定」で勤怠記録のCSVを出力する際、確定不可の原因として正しくないものはどれですか？", "choices": ["雇用形態の変更後、再計算を行っていない", "勤怠エラーが残っている", "勤怠アラートが残っている", "未承認の勤怠が残っている"], "ans": 2, "place": "勤怠 ＞ 勤怠確定", "exp": "勤怠アラートが残っていても勤怠確定は可能です。確定には、勤怠エラーの修正・申請勤怠の承認・雇用形態変更時の再計算完了が必要です。"}, {"q": "FLARO利用による請求書はどのタイミングで届きますか？", "choices": ["利用月の請求分が翌月末のタイミングで届く", "利用月の請求分が翌月始めのタイミングで届く", "利用月の請求分が利用開始から半年サイクルで届く", "利用月の請求分が利用開始から1年サイクルで届く"], "ans": 1, "place": "", "exp": "月々の利用請求書は、翌月月初にメールで送付されます。振込対応のみとなりますのでご確認ください。"}];
+const KEY=['A','B','C','D'];
+let cust={company:'',staff:'',store:''};
+let answers=new Array(qs.length).fill(null);
+let cur=0, started=false, done=false, saveState='', pending=false;
+const app=document.getElementById('app');
+
+function intro(){
+  app.innerHTML=`
+    <div class="eyebrow">Day ${DAY}</div>
+    <h1>${SUB}</h1>
+    <div class="subttl">全${qs.length}問・4択　／　選択式の理解度チェックです</div>
+    <p class="lead">FLAROの導入内容の定着を確認するためのチェックです。実際の画面を思い出しながら回答してください。</p>
+    <div class="field">
+      <label>会社名<span class="req">必須</span></label>
+      <input id="f-company" type="text" placeholder="例）株式会社flaro" autocomplete="organization">
+    </div>
+    <div class="field">
+      <label>お名前<span class="req">必須</span></label>
+      <input id="f-staff" type="text" placeholder="例）FLARO 太郎" autocomplete="name">
+    </div>
+    <div class="field">
+      <label>店舗名<span class="opt">任意</span></label>
+      <input id="f-store" type="text" placeholder="例）渋谷店">
+    </div>
+    <div class="err" id="introErr"></div>
+    <button class="btn btn-primary" onclick="start()">チェックをはじめる</button>`;
+}
+
+function start(){
+  const c=document.getElementById('f-company').value.trim();
+  const s=document.getElementById('f-staff').value.trim();
+  const st=document.getElementById('f-store').value.trim();
+  if(!c||!s){document.getElementById('introErr').textContent='会社名とお名前は必須です。';return;}
+  cust={company:c,staff:s,store:st};
+  started=true;cur=0;render();
+}
+
+function render(){
+  if(done){return result();}
+  const q=qs[cur];
+  const dots=qs.map((_,i)=>`<div class="pdot ${i===cur?'cur':answers[i]!==null?'done':''}"></div>`).join('');
+  const choices=q.choices.map((c,i)=>`
+    <div class="choice ${answers[cur]===i?'sel':''}" onclick="pick(${i})">
+      <div class="key">${KEY[i]}</div><div class="ctext">${c}</div>
+    </div>`).join('');
+  const allAnswered=answers.every(a=>a!==null);
+  const last=cur===qs.length-1;
+  let navBtns='';
+  if(cur>0) navBtns+=`<button class="btn btn-ghost" onclick="go(-1)">戻る</button>`;
+  if(last) navBtns+=`<button class="btn btn-primary" onclick="submit()" ${allAnswered?'':'disabled'}>採点する</button>`;
+  const nav = navBtns?`<div class="nav">${navBtns}</div>`:'';
+  const hint = last?'':`<div class="hint">選択すると自動で次の問題へ進みます</div>`;
+  app.innerHTML=`
+    <div class="progress"><div class="dots">${dots}</div><div class="counter">${cur+1} / ${qs.length}</div></div>
+    <div class="qnum">Q${cur+1}</div>
+    <div class="qtext">${q.q}</div>
+    <div class="choices">${choices}</div>
+    ${hint}
+    ${nav}`;
+}
+
+function pick(i){
+  if(pending)return;
+  answers[cur]=i;
+  render();
+  if(cur<qs.length-1){
+    pending=true;
+    setTimeout(()=>{pending=false;cur++;render();},320);
+  }
+}
+function go(d){const n=cur+d;if(n<0||n>=qs.length)return;cur=n;render();}
+
+function submit(){
+  if(!answers.every(a=>a!==null)){return;}
+  done=true;
+  saveState='sending';
+  result();
+  logResult();
+}
+
+function result(){
+  let correct=0;
+  qs.forEach((q,i)=>{if(answers[i]===q.ans)correct++;});
+  const pct=Math.round(correct/qs.length*100);
+  const msg=pct>=80?'よくできました！しっかり定着しています。':pct>=60?'あと少し。間違えた箇所を復習しましょう。':'もう一度設定を確認してから挑戦してみましょう。';
+  const revs=qs.map((q,i)=>{
+    const ok=answers[i]===q.ans;
+    const place=q.place?`<div class="place"><b>設定場所：</b>${q.place}</div>`:'';
+    const wrong=!ok?`<div class="ans">正解：<b>${KEY[q.ans]}. ${q.choices[q.ans]}</b></div>`:'';
+    return `<div class="rev ${ok?'ok':'ng'}">
+      <div class="rq"><span class="badge">${ok?'正解':'不正解'}</span><span>Q${i+1}. ${q.q}</span></div>
+      ${wrong}
+      <div class="exp">${q.exp}</div>
+      ${place}
+    </div>`;
+  }).join('');
+  const saveMsg = saveState==='ok' ? '回答を記録しました。' : saveState==='err' ? '※回答の自動記録に失敗しました（結果はこの画面で確認できます）。' : '回答を記録しています…';
+  app.innerHTML=`
+    <div class="score-wrap">
+      <div class="score-num">${correct}<small> / ${qs.length}</small></div>
+      <div class="score-msg">${pct}点　・　${msg}</div>
+      <div class="score-bar"><i style="width:${pct}%"></i></div>
+    </div>
+    <div class="savebar" id="savebar">${saveMsg}</div>
+    <div class="rev-title">回答と解説</div>
+    ${revs}
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="reset()">もう一度挑戦する</button>
+      <button class="btn btn-primary" onclick="location.href='index.html'">他の理解度チェックをする</button>
+    </div>`;
+}
+
+function logResult(){
+  let correct=0;qs.forEach((q,i)=>{if(answers[i]===q.ans)correct++;});
+  const payload={
+    type:'quiz',
+    day:DAY,
+    company:cust.company, staff:cust.staff, store:cust.store,
+    correct:correct, total:qs.length, score:Math.round(correct/qs.length*100),
+    answers:answers.map(a=>a===null?'':KEY[a]),
+    timestamp:new Date().toISOString()
+  };
+  fetch(GAS,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
+    .then(()=>{saveState='ok';const b=document.getElementById('savebar');if(b)b.textContent='回答を記録しました。';})
+    .catch(()=>{saveState='err';const b=document.getElementById('savebar');if(b)b.textContent='※回答の自動記録に失敗しました（結果はこの画面で確認できます）。';});
+}
+
+function reset(){answers=new Array(qs.length).fill(null);cur=0;done=false;saveState='';pending=false;render();}
+
+intro();
+</script>
+</body>
+</html>
