@@ -213,13 +213,18 @@ function result(){
 }
 
 function logResult(){
-  let correct=0;qs.forEach((q,i)=>{if(answers[i]===q.ans)correct++;});
+  let correct=0;
+  const marks=qs.map((q,i)=>{
+    const ok=answers[i]===q.ans;
+    if(ok)correct++;
+    return (answers[i]===null?'':KEY[answers[i]])+' '+(ok?'○':'✕');
+  });
   const payload={
-    type:'quiz',
     day:DAY,
     company:cust.company, staff:cust.staff, store:cust.store,
-    correct:correct, total:qs.length, score:Math.round(correct/qs.length*100),
-    answers:answers.map(a=>a===null?'':KEY[a]),
+    scoreText:correct+' / '+qs.length,
+    pct:Math.round(correct/qs.length*100),
+    marks:marks,
     timestamp:new Date().toISOString()
   };
   fetch(GAS,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
