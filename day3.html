@@ -4,204 +4,232 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FLARO 理解度チェック｜Day 3</title>
-<style>*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo",sans-serif;background:#f5f4f0;color:#1a1a1a;min-height:100vh;padding:24px 16px}
-.container{max-width:560px;margin:0 auto}
-.back{font-size:13px;color:#999;background:none;border:none;cursor:pointer;padding:0;margin-bottom:16px;display:block}
-.back:hover{color:#1a1a1a}
-.badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.08em;background:#1a1a1a;color:#f5f4f0;padding:3px 9px;border-radius:3px;margin-bottom:8px}
-.title{font-size:20px;font-weight:700;line-height:1.3;margin-bottom:3px}
-.subtitle{font-size:12px;color:#888;margin-bottom:24px}
-.form-card{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px}
-.form-title{font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:14px}
-.field{margin-bottom:12px}
-.field label{display:block;font-size:12px;font-weight:500;color:#555;margin-bottom:4px}
-.req{color:#c0392b;margin-left:2px}
-.field input{width:100%;padding:9px 12px;border:1.5px solid #e8e8e4;border-radius:8px;font-size:14px;color:#1a1a1a;background:#fafafa;outline:none;transition:border 0.15s}
-.field input:focus{border-color:#1a1a1a;background:#fff}
-.field input.error{border-color:#c0392b}
-.err-msg{font-size:11px;color:#c0392b;margin-top:3px;display:none}
-.start-btn{width:100%;padding:12px;border-radius:8px;border:none;background:#1a1a1a;color:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:background 0.15s}
-.start-btn:hover{background:#333}
-.progress-wrap{margin-bottom:16px}
-.progress-meta{display:flex;justify-content:space-between;font-size:12px;color:#999;margin-bottom:5px}
-.progress-bg{height:3px;background:#ddd;border-radius:2px}
-.progress-fill{height:3px;background:#1a1a1a;border-radius:2px;transition:width 0.35s}
-.dot-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px}
-.dot{width:9px;height:9px;border-radius:50%;background:#e0e0e0;cursor:pointer}
-.dot.done{background:#aaa}.dot.cur{background:#1a1a1a}
-.q-card{background:#fff;border-radius:12px;padding:20px;margin-bottom:12px}
-.q-fn{font-size:10px;font-weight:700;letter-spacing:0.05em;color:#ccc;margin-bottom:5px}
-.q-text{font-size:14px;font-weight:500;line-height:1.65;margin-bottom:14px}
-.choices{display:flex;flex-direction:column;gap:7px}
-.choice{padding:11px 13px;border-radius:8px;border:1.5px solid #e8e8e4;background:#fafafa;font-size:13px;color:#333;cursor:pointer;text-align:left;transition:all 0.12s;line-height:1.5;width:100%}
-.choice:hover{border-color:#999;background:#f0efeb}
-.choice.selected{border-color:#1a1a1a;background:#1a1a1a;color:#fff}
-.nav{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.btn{font-size:13px;font-weight:500;padding:9px 16px;border-radius:8px;border:1.5px solid #1a1a1a;background:transparent;color:#1a1a1a;cursor:pointer;transition:all 0.15s}
-.btn:hover{background:#1a1a1a;color:#fff}
-.btn:disabled{opacity:0.22;cursor:default}
-.btn-primary{background:#1a1a1a;color:#fff}
-.btn-primary:disabled{opacity:0.22;cursor:default}
-.result-card{background:#fff;border-radius:12px;padding:28px 20px;text-align:center}
-.result-score{font-size:48px;font-weight:700;line-height:1;margin-bottom:4px}
-.great{color:#2d7a4f}.ok{color:#b07d1a}.low{color:#c0392b}
-.result-label{font-size:13px;color:#888;margin-bottom:20px;line-height:1.6}
-.review-list{text-align:left;margin-bottom:20px}
-.review-item{padding:12px 14px;border-radius:8px;margin-bottom:7px;font-size:13px;line-height:1.55}
-.review-item.c{background:#edf7f1;border:1px solid #b7dfc9;color:#1a4a30}
-.review-item.w{background:#fdf0ef;border:1px solid #f0b9b5;color:#7a1a12}
-.ans{font-size:12px;margin-top:3px;opacity:0.75}
-.explain{font-size:11px;margin-top:5px;padding-top:5px;border-top:0.5px solid currentColor;opacity:0.65;line-height:1.5}
-.result-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.sending{font-size:12px;color:#888;margin-bottom:12px}</style>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+:root{
+  --bg:#eef2f6; --card:#ffffff; --ink:#1c2530; --sub:#66707c;
+  --line:#e0e6ec; --brand:#036EB8; --brand-ink:#025a97;
+  --sel:#e6f1fa; --sel-line:#5ba3d6;
+  --ok:#2f7d5b; --ok-bg:#eef6f1; --ng:#c0503f; --ng-bg:#fbeeeb;
+  --shadow:0 1px 2px rgba(15,35,55,.05),0 8px 28px rgba(15,35,55,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:680px;margin:0 auto;padding:28px 18px 64px}
+.brandbar{display:flex;align-items:center;gap:10px;margin-bottom:22px}
+.brandbar .mark{width:26px;height:26px;border-radius:7px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;letter-spacing:.5px}
+.brandbar .name{font-weight:700;letter-spacing:.06em;font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:26px 24px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--brand);text-transform:none}
+h1{font-size:23px;font-weight:700;margin:8px 0 4px;letter-spacing:.01em}
+.subttl{color:var(--sub);font-size:14px;margin-bottom:20px}
+.lead{font-size:14px;color:var(--sub);margin:14px 0 22px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;font-weight:500;margin-bottom:6px}
+.field label .req{color:var(--ng);margin-left:4px;font-size:12px}
+.field label .opt{color:var(--sub);margin-left:6px;font-size:11px;font-weight:400}
+.field input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-family:inherit;font-size:15px;background:#fbfaf7;transition:border-color .15s,box-shadow .15s}
+.field input:focus{outline:none;border-color:var(--sel-line);box-shadow:0 0 0 3px rgba(139,183,170,.25);background:#fff}
+.meta{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--sub);margin-bottom:6px}
+.meta span{display:inline-flex;align-items:center;gap:5px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--brand)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 18px;border:none;border-radius:11px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:transform .05s,background .15s,opacity .15s}
+.btn-primary{background:var(--brand);color:#fff}
+.btn-primary:hover{background:var(--brand-ink)}
+.btn-primary:active{transform:translateY(1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--ink);border:1px solid var(--line);width:auto;padding:12px 20px}
+.btn-ghost:hover{background:#f7f5f0}
+.err{color:var(--ng);font-size:13px;margin-top:6px;min-height:18px}
+/* progress */
+.progress{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.dots{display:flex;gap:7px;flex-wrap:wrap;flex:1}
+.pdot{width:26px;height:6px;border-radius:3px;background:var(--line);transition:background .2s}
+.pdot.done{background:var(--sel-line)}
+.pdot.cur{background:var(--brand)}
+.counter{font-size:12px;color:var(--sub);white-space:nowrap;font-variant-numeric:tabular-nums}
+.qnum{font-size:12px;font-weight:700;color:var(--brand);letter-spacing:.1em;margin-bottom:8px}
+.qtext{font-size:17px;font-weight:500;margin-bottom:18px}
+.choices{display:flex;flex-direction:column;gap:10px}
+.choice{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid var(--line);border-radius:12px;cursor:pointer;background:#fff;transition:border-color .12s,background .12s}
+.choice:hover{border-color:var(--sel-line);background:#fafcfb}
+.choice.sel{border-color:var(--sel-line);background:var(--sel)}
+.choice .key{flex:none;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--sub);transition:all .12s}
+.choice.sel .key{background:var(--brand);border-color:var(--brand);color:#fff}
+.choice.sel{animation:pop .28s ease}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.012)}100%{transform:scale(1)}}
+.hint{font-size:12px;color:var(--sub);text-align:center;margin-top:16px}
+.choice .ctext{font-size:15px;padding-top:1px}
+.nav{display:flex;gap:12px;margin-top:24px}
+.nav .btn-ghost{flex:1}
+.nav .btn-primary{flex:2}
+/* result */
+.score-wrap{text-align:center;padding:8px 0 20px}
+.score-num{font-size:52px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.score-num small{font-size:22px;font-weight:400;color:var(--sub)}
+.score-msg{font-size:15px;color:var(--sub);margin-top:10px}
+.score-bar{height:8px;border-radius:4px;background:var(--line);margin:18px auto 0;max-width:280px;overflow:hidden}
+.score-bar i{display:block;height:100%;background:var(--brand);border-radius:4px}
+.rev-title{font-size:13px;font-weight:700;color:var(--sub);letter-spacing:.06em;margin:26px 0 12px}
+.rev{border:1px solid var(--line);border-radius:12px;padding:15px 16px;margin-bottom:12px}
+.rev.ok{border-color:#cfe6da;background:var(--ok-bg)}
+.rev.ng{border-color:#eccec7;background:var(--ng-bg)}
+.rev .rq{font-size:14px;font-weight:500;display:flex;gap:8px;align-items:flex-start}
+.rev .badge{flex:none;font-size:12px;font-weight:700;padding:1px 8px;border-radius:20px}
+.rev.ok .badge{background:var(--ok);color:#fff}
+.rev.ng .badge{background:var(--ng);color:#fff}
+.rev .ans{font-size:13px;margin-top:9px;padding-top:9px;border-top:1px dashed rgba(0,0,0,.12)}
+.rev .ans b{color:var(--ok)}
+.rev .exp{font-size:13px;color:#454b56;margin-top:7px}
+.rev .place{font-size:12px;color:var(--sub);margin-top:6px}
+.rev .place b{color:var(--brand-ink);font-weight:700}
+.savebar{font-size:12px;color:var(--sub);text-align:center;margin-top:8px;min-height:18px}
+.footer{text-align:center;font-size:11px;color:#9aa0ab;margin-top:26px;letter-spacing:.04em}
+@media (max-width:480px){h1{font-size:20px}.qtext{font-size:16px}.score-num{font-size:44px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
 </head>
 <body>
-<div class="container">
-  <button class="back" onclick="location.href='index.html'">← Dayを選びなおす</button>
-  <div class="badge">Day 3</div>
-  <div class="title">理解度チェッククイズ</div>
-  <div class="subtitle">労務規約項目マスタ・雇用形態マスタ（労務管理者向け）</div>
-  <div id="app"></div>
+<div class="wrap">
+  <div class="brandbar"><div class="mark">F</div><div class="name">FLARO 理解度チェック</div></div>
+  <div class="card" id="app"></div>
+  <div class="footer">Powered by FLARO カスタマーサクセスチーム</div>
 </div>
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyRIJg_fCHZqUeKK8mEgjjlHZvCfTnyikGA69zyFny3mBGLjhSTDqJVKInyrzcAC_cY/exec";
-const DAY = "Day 3";
-const qs = [{"fn": "労務規約項目マスタ", "q": "特賃日に勤務した際の「加算額」が店舗ごとで異なる場合はどの画面で設定しますか？", "choices": ["労務規約項目マスタ（特賃日タブ）", "雇用形態マスタ", "店舗マスタ（責任者・特賃日タブ）", "スタッフマスタ（人件費情報タブ）"], "ans": 2, "explain": "労務規約項目マスタで「特賃日パターン」を作成後、各店舗の「店舗マスタ」の「責任者・特賃日」タブにて適用月と「加算額」を設定します。"}, {"fn": "雇用形態マスタ", "q": "出社打刻の丸め単位を「15分・切り上げ」と設定した場合、09時01分に打刻したときの出社時刻はどう記録されますか？", "choices": ["09時00分", "09時01分", "09時15分", "09時30分"], "ans": 2, "explain": "15分単位の切り上げ設定では、00分01秒〜15分00秒の打刻は次の15分の区切り（09時15分）として集計されます。"}, {"fn": "雇用形態マスタ", "q": "「自動休憩機能」についての仕様で正しいものはどれですか？", "choices": ["打刻休憩と自動休憩を併用することは一切できない", "労働時間が設定された時間を超えた場合、自動的に休憩時間が労働時間から差し引かれる", "自動休憩を適用させるためには、退勤時に必ずスタッフ本人の申請が必要である", "打刻休憩と自動休憩が重複した場合、必ず両方を合算して休憩時間として計上する"], "ans": 1, "explain": "設定された労働時間を超えた場合に自動的に所定の休憩時間が控除されます。打刻休憩との重複時は「打刻休憩のみ」「自動休憩のみ」「合算する」のいずれかを選択できます。"}, {"fn": "労務規約項目マスタ", "q": "時間表示形式を「10進数」に設定している場合、45分の勤怠データはどのように表示されますか？", "choices": ["0.30", "0.45", "0.75", "0.85"], "ans": 2, "explain": "10進数の場合、1時間を「1.00」として表示するため、15分＝0.25、30分＝0.50、45分＝0.75となります。"}, {"fn": "雇用形態マスタ", "q": "「自動有給管理」において、有給付与の基準となる所定労働日数の設定はどれを使用しますか？", "choices": ["月の契約労働日数", "週の契約労働日数", "年の契約労働日数", "実打刻による出勤日数のみ"], "ans": 1, "explain": "雇用形態マスタで設定された「週の契約労働日数」に対して、労務規約項目マスタで作成した有給パターンの日数分を満たしているかどうかで有給が付与されます。"}, {"fn": "労務規約項目マスタ", "q": "「月給者人件費計上設定」で「対象月の日数で日割」を選択した場合の正しい動作はどれですか？", "choices": ["打刻した日のみに日割りの人件費が計上される", "打刻の有無に関わらず、対象月の各日に日割りの人件費が計上される", "打刻の有無に関わらず、対象月の末日に一括で全額計上される", "所定労働日数で日割りされた金額が、公休日にのみ計上される"], "ans": 1, "explain": "「対象月の日数で日割」設定では、打刻の有無にかかわらず対象月のすべての日に対して日割りの人件費が毎日計上されます。"}, {"fn": "労務規約項目マスタ", "q": "「有給（1日）」の設定で「みなし時間を労働時間とする」を有効にした場合の扱いはどうなりますか？", "choices": ["勤務時間としては集計されず、人件費のみが計上される", "勤務時間としても集計され、人件費も計上される", "勤務時間として集計されるが、人件費は計上されない", "シフト予定時間に関わらず常に8時間勤務として計上される"], "ans": 1, "explain": "「みなし時間を労働時間とする」を有効にすると、有給取得時のみなし時間が人件費計算だけでなく実際の「勤務時間」としても集計されます。"}, {"fn": "雇用形態マスタ", "q": "1日の休憩の合計時間を15分単位で丸めたい場合、休憩の丸め処理は何にチェックを入れるのが適切ですか？", "choices": ["休憩打刻を丸める", "休憩毎集計時間を丸める", "実績毎集計時間を丸める", "該当機能なし"], "ans": 3, "explain": "FLAROの丸め処理は「出社/退社打刻」および「休憩開始/終了打刻」の時刻そのものに対する丸めです。1日の休憩の「合計時間」を丸める機能はシステム上用意されていません。"}];
-const alpha = ['A','B','C','D'];
-let phase = 'form';
-let userInfo = {};
-let cur = 0, answers = new Array(qs.length).fill(null), done = false;
+const DAY=3;
+const SUB="労務規約項目マスタ・雇用形態マスタ（労務管理者向け）";
+const GAS="https://script.google.com/macros/s/AKfycbyRIJg_fCHZqUeKK8mEgjjlHZvCfTnyikGA69zyFny3mBGLjhSTDqJVKInyrzcAC_cY/exec";
+const qs=[{"q": "「雇用形態マスタ」の勤務時間の丸め設定で、出社打刻の丸め単位を「15分」・「切り上げる」に設定した場合、09時01分に打刻したときの出社時刻はどう記録されますか？", "choices": ["09時00分", "09時01分", "09時15分", "09時30分"], "ans": 2, "place": "勤怠 ＞ 雇用形態マスタ", "exp": "15分・切り上げ設定では、00分01秒〜15分00秒の打刻は次の15分区切りに集計されます。09時01分の打刻は「09時15分」の出社として記録されます。"}, {"q": "「労務規約項目マスタ」の「月給者人件費計上設定」で「対象月の日数で日割」を選択した場合の正しい動作はどれですか？", "choices": ["打刻した日のみに日割りの人件費が計上される", "打刻の有無に関わらず、対象月の各日に日割りの人件費が計上される", "打刻の有無に関わらず、対象月の末日に一括で全額計上される", "所定労働日数で日割りされた金額が、公休日にのみ計上される"], "ans": 1, "place": "設定 ＞ 労務規約項目マスタ", "exp": "「対象月の日数で日割」では、出勤の有無（打刻の有無）に関わらず、対象月のすべての日に日割りの人件費が毎日計上されます。"}, {"q": "所定時間の計上設定について、正しいものはどれですか？", "choices": ["月単位で残業計算する場合、「労務規約項目マスタ」で設定したものを「雇用形態マスタ」で紐づける", "月単位で残業計算する場合、「雇用形態マスタ」で設定したものを「労務規約項目マスタ」で紐づける", "週単位で残業計算する場合、「労務規約項目マスタ」での設定のみ行う", "日単位で残業計算する場合、「労務規約項目マスタ」での設定のみ行う"], "ans": 0, "place": "勤怠 ＞ 労務規約項目マスタ / 雇用形態マスタ", "exp": "残業は所定労働時間を超えた分で計上します。月の所定時間は「労務規約項目マスタ」で月ごとに設定し、雇用形態マスタに割り当てて適用。週・日の所定労働時間は雇用形態マスタ内の登録のみで適用されます。"}];
+const KEY=['A','B','C','D'];
+let cust={company:'',staff:'',store:''};
+let answers=new Array(qs.length).fill(null);
+let cur=0, started=false, done=false, saveState='', pending=false;
+const app=document.getElementById('app');
 
-function render() {
-  if (phase === 'form') renderForm();
-  else if (phase === 'quiz') renderQuiz();
-  else renderResult();
-}
-
-function renderForm() {
-  document.getElementById('app').innerHTML = `
-    <div class="form-card">
-      <div class="form-title">はじめに情報を入力してください</div>
-      <div class="field">
-        <label>会社名<span class="req">*</span></label>
-        <input type="text" id="f-company" placeholder="例：株式会社○○フード">
-        <div class="err-msg" id="e-company">会社名を入力してください</div>
-      </div>
-      <div class="field">
-        <label>氏名<span class="req">*</span></label>
-        <input type="text" id="f-name" placeholder="例：田中 太郎">
-        <div class="err-msg" id="e-name">氏名を入力してください</div>
-      </div>
-      <div class="field">
-        <label>店舗名<span style="font-size:11px;color:#bbb;margin-left:4px">任意</span></label>
-        <input type="text" id="f-store" placeholder="例：渋谷店">
-      </div>
-      <button class="start-btn" onclick="startQuiz()">クイズをスタートする</button>
+function intro(){
+  app.innerHTML=`
+    <div class="eyebrow">Day ${DAY}</div>
+    <h1>${SUB}</h1>
+    <div class="subttl">全${qs.length}問・4択　／　選択式の理解度チェックです</div>
+    <p class="lead">FLAROの導入内容の定着を確認するためのチェックです。実際の画面を思い出しながら回答してください。</p>
+    <div class="field">
+      <label>会社名<span class="req">必須</span></label>
+      <input id="f-company" type="text" placeholder="例）株式会社flaro" autocomplete="organization">
     </div>
-  `;
+    <div class="field">
+      <label>お名前<span class="req">必須</span></label>
+      <input id="f-staff" type="text" placeholder="例）FLARO 太郎" autocomplete="name">
+    </div>
+    <div class="field">
+      <label>店舗名<span class="opt">任意</span></label>
+      <input id="f-store" type="text" placeholder="例）渋谷店">
+    </div>
+    <div class="err" id="introErr"></div>
+    <button class="btn btn-primary" onclick="start()">チェックをはじめる</button>`;
 }
 
-function startQuiz() {
-  const company = document.getElementById('f-company').value.trim();
-  const name = document.getElementById('f-name').value.trim();
-  const store = document.getElementById('f-store').value.trim();
-  let valid = true;
-  if (!company) {
-    document.getElementById('f-company').classList.add('error');
-    document.getElementById('e-company').style.display = 'block';
-    valid = false;
-  } else {
-    document.getElementById('f-company').classList.remove('error');
-    document.getElementById('e-company').style.display = 'none';
-  }
-  if (!name) {
-    document.getElementById('f-name').classList.add('error');
-    document.getElementById('e-name').style.display = 'block';
-    valid = false;
-  } else {
-    document.getElementById('f-name').classList.remove('error');
-    document.getElementById('e-name').style.display = 'none';
-  }
-  if (!valid) return;
-  userInfo = { company, name, store };
-  phase = 'quiz';
+function start(){
+  const c=document.getElementById('f-company').value.trim();
+  const s=document.getElementById('f-staff').value.trim();
+  const st=document.getElementById('f-store').value.trim();
+  if(!c||!s){document.getElementById('introErr').textContent='会社名とお名前は必須です。';return;}
+  cust={company:c,staff:s,store:st};
+  started=true;cur=0;render();
+}
+
+function render(){
+  if(done){return result();}
+  const q=qs[cur];
+  const dots=qs.map((_,i)=>`<div class="pdot ${i===cur?'cur':answers[i]!==null?'done':''}"></div>`).join('');
+  const choices=q.choices.map((c,i)=>`
+    <div class="choice ${answers[cur]===i?'sel':''}" onclick="pick(${i})">
+      <div class="key">${KEY[i]}</div><div class="ctext">${c}</div>
+    </div>`).join('');
+  const allAnswered=answers.every(a=>a!==null);
+  const last=cur===qs.length-1;
+  let navBtns='';
+  if(cur>0) navBtns+=`<button class="btn btn-ghost" onclick="go(-1)">戻る</button>`;
+  if(last) navBtns+=`<button class="btn btn-primary" onclick="submit()" ${allAnswered?'':'disabled'}>採点する</button>`;
+  const nav = navBtns?`<div class="nav">${navBtns}</div>`:'';
+  const hint = last?'':`<div class="hint">選択すると自動で次の問題へ進みます</div>`;
+  app.innerHTML=`
+    <div class="progress"><div class="dots">${dots}</div><div class="counter">${cur+1} / ${qs.length}</div></div>
+    <div class="qnum">Q${cur+1}</div>
+    <div class="qtext">${q.q}</div>
+    <div class="choices">${choices}</div>
+    ${hint}
+    ${nav}`;
+}
+
+function pick(i){
+  if(pending)return;
+  answers[cur]=i;
   render();
+  if(cur<qs.length-1){
+    pending=true;
+    setTimeout(()=>{pending=false;cur++;render();},320);
+  }
+}
+function go(d){const n=cur+d;if(n<0||n>=qs.length)return;cur=n;render();}
+
+function submit(){
+  if(!answers.every(a=>a!==null)){return;}
+  done=true;
+  saveState='sending';
+  result();
+  logResult();
 }
 
-function renderQuiz() {
-  const q = qs[cur];
-  const pct = Math.round(((cur+1)/qs.length)*100);
-  document.getElementById('app').innerHTML = `
-    <div class="progress-wrap">
-      <div class="progress-meta"><span>${q.fn}</span><span>${cur+1} / ${qs.length}</span></div>
-      <div class="progress-bg"><div class="progress-fill" style="width:${pct}%"></div></div>
+function result(){
+  let correct=0;
+  qs.forEach((q,i)=>{if(answers[i]===q.ans)correct++;});
+  const pct=Math.round(correct/qs.length*100);
+  const msg=pct>=80?'よくできました！しっかり定着しています。':pct>=60?'あと少し。間違えた箇所を復習しましょう。':'もう一度設定を確認してから挑戦してみましょう。';
+  const revs=qs.map((q,i)=>{
+    const ok=answers[i]===q.ans;
+    const place=q.place?`<div class="place"><b>設定場所：</b>${q.place}</div>`:'';
+    const wrong=!ok?`<div class="ans">正解：<b>${KEY[q.ans]}. ${q.choices[q.ans]}</b></div>`:'';
+    return `<div class="rev ${ok?'ok':'ng'}">
+      <div class="rq"><span class="badge">${ok?'正解':'不正解'}</span><span>Q${i+1}. ${q.q}</span></div>
+      ${wrong}
+      <div class="exp">${q.exp}</div>
+      ${place}
+    </div>`;
+  }).join('');
+  const saveMsg = saveState==='ok' ? '回答を記録しました。' : saveState==='err' ? '※回答の自動記録に失敗しました（結果はこの画面で確認できます）。' : '回答を記録しています…';
+  app.innerHTML=`
+    <div class="score-wrap">
+      <div class="score-num">${correct}<small> / ${qs.length}</small></div>
+      <div class="score-msg">${pct}点　・　${msg}</div>
+      <div class="score-bar"><i style="width:${pct}%"></i></div>
     </div>
-    <div class="dot-row">${qs.map((_,i)=>'<div class="dot'+(answers[i]!==null?' done':'')+(i===cur?' cur':'')+'" onclick="go('+i+')"></div>').join('')}</div>
-    <div class="q-card">
-      <div class="q-fn">${q.fn}</div>
-      <div class="q-text">Q${cur+1}. ${q.q}</div>
-      <div class="choices">${q.choices.map((c,i)=>'<button class="choice'+(answers[cur]===i?' selected':'')+'" onclick="sel('+i+')">'+alpha[i]+'. '+c+'</button>').join('')}</div>
-    </div>
+    <div class="savebar" id="savebar">${saveMsg}</div>
+    <div class="rev-title">回答と解説</div>
+    ${revs}
     <div class="nav">
-      <button class="btn" onclick="prev()" ${cur===0?'disabled':''}>← 前へ</button>
-      <button class="btn" onclick="next()" ${cur===qs.length-1?'disabled':''}>次へ →</button>
-      <button class="btn btn-primary" onclick="submit()" ${answers.includes(null)?'disabled':''}>採点する</button>
-    </div>
-  `;
+      <button class="btn btn-ghost" onclick="reset()">もう一度挑戦する</button>
+      <button class="btn btn-primary" onclick="location.href='index.html'">他の理解度チェックをする</button>
+    </div>`;
 }
 
-function go(i){cur=i;render();}
-function sel(i){answers[cur]=i;render();}
-function prev(){if(cur>0){cur--;render();}}
-function next(){if(cur<qs.length-1){cur++;render();}}
-function submit(){if(answers.includes(null))return;done=true;sendData();phase='result';render();}
-
-function sendData() {
-  const correct = qs.filter((_,i)=>answers[i]===qs[i].ans).length;
-  const answerLabels = answers.map((a,i)=>{
-    if(a===null) return '未回答';
-    return alpha[a]+(a===qs[i].ans?' ○':' ✕');
-  });
-  const payload = {
-    company: userInfo.company,
-    name: userInfo.name,
-    store: userInfo.store,
-    day: DAY,
-    score: correct,
-    total: qs.length,
-    answers: answerLabels
+function logResult(){
+  let correct=0;qs.forEach((q,i)=>{if(answers[i]===q.ans)correct++;});
+  const payload={
+    type:'quiz',
+    day:DAY,
+    company:cust.company, staff:cust.staff, store:cust.store,
+    correct:correct, total:qs.length, score:Math.round(correct/qs.length*100),
+    answers:answers.map(a=>a===null?'':KEY[a]),
+    timestamp:new Date().toISOString()
   };
-  fetch(GAS_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(payload)
-  }).catch(()=>{});
+  fetch(GAS,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
+    .then(()=>{saveState='ok';const b=document.getElementById('savebar');if(b)b.textContent='回答を記録しました。';})
+    .catch(()=>{saveState='err';const b=document.getElementById('savebar');if(b)b.textContent='※回答の自動記録に失敗しました（結果はこの画面で確認できます）。';});
 }
 
-function renderResult() {
-  const correct = qs.filter((_,i)=>answers[i]===qs[i].ans).length;
-  const pct = Math.round((correct/qs.length)*100);
-  const cls = pct>=80?'great':pct>=60?'ok':'low';
-  const msg = pct>=80?'理解度バッチリです！':'苦手な箇所を復習してみましょう。';
-  document.getElementById('app').innerHTML = `
-    <div class="result-card">
-      <div style="font-size:11px;color:#ccc;font-weight:700;letter-spacing:0.06em;margin-bottom:4px">DAY ${userInfo.name} さんの結果</div>
-      <div class="result-score ${cls}">${correct}<span style="font-size:20px;font-weight:400"> / ${qs.length}</span></div>
-      <div class="result-label">${pct}点 · ${msg}</div>
-      <div class="sending">※ 回答データを送信しました</div>
-      <div class="review-list">${qs.map((q,i)=>{const ok=answers[i]===q.ans;return'<div class="review-item '+(ok?'c':'w')+'"><div>'+(ok?'○':'✕')+' Q'+(i+1)+'. '+q.q+'</div>'+(ok?'':'<div class="ans">正解：'+alpha[q.ans]+'. '+q.choices[q.ans]+'</div>')+'<div class="explain">'+q.explain+'</div></div>';}).join('')}</div>
-      <div class="result-actions">
-        <button class="btn" onclick="retry()">もう一度挑戦する</button>
-        
-      </div>
-    </div>
-  `;
-}
+function reset(){answers=new Array(qs.length).fill(null);cur=0;done=false;saveState='';pending=false;render();}
 
-function retry(){answers=new Array(qs.length).fill(null);cur=0;done=false;phase='form';userInfo={};render();}
-render();
+intro();
 </script>
 </body>
 </html>
